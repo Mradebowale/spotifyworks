@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from .models import Songs
 from .serializers import songserials
@@ -7,12 +7,13 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import auth
 from django.contrib.auth.models import User
 from django.contrib import messages
+from rest_framework.permissions import IsAdminUser
 
 
 # Create your views here.
 
-def admin_only(User):
-    return User.is_authenticated and User.is_superuser
+# def admin_only(User):
+#     return User.is_authenticated and User.is_superuser
 
 def login(request):
     if request.method == "POST":
@@ -75,7 +76,8 @@ def User_view(request):
             return Response("Song added successfully")
         return Response(new_song.errors)
     
-@user_passes_test(admin_only)
+# @user_passes_test(admin_only)
+@permission_classes([IsAdminUser])
 @api_view(["GET", "PUT","DELETE"])
 def Admin_view(request, id):
     if request.method == "GET":
